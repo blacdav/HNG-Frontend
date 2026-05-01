@@ -44,6 +44,11 @@ export default function DashboardPage({ onLogin }) {
   const [viewMode, setViewMode] = useState('browse')
   const [pagination, setPagination] = useState(initialPagination)
 
+  function handleRequestError(error) {
+    setSelectedProfile(null)
+    setPageError(error.message)
+  }
+
   useEffect(() => {
     if (currentUser) {
       loadProfiles(initialFilters, 1, initialPagination.limit)
@@ -76,7 +81,7 @@ export default function DashboardPage({ onLogin }) {
       setPagination(normalizePagination(payload, page, limit))
       setViewMode('browse')
     } catch (error) {
-      setPageError(error.message)
+      handleRequestError(error)
     } finally {
       setLoadingProfiles(false)
     }
@@ -103,7 +108,7 @@ export default function DashboardPage({ onLogin }) {
       setSelectedProfile(payload.data)
       await loadProfiles(filters, 1, pagination.limit)
     } catch (error) {
-      setPageError(error.message)
+      handleRequestError(error)
     } finally {
       setBusyAction('')
     }
@@ -132,7 +137,7 @@ export default function DashboardPage({ onLogin }) {
       setPagination(normalizePagination(payload, page, limit))
       setViewMode('search')
     } catch (error) {
-      setPageError(error.message)
+      handleRequestError(error)
     } finally {
       setLoadingProfiles(false)
     }
@@ -157,7 +162,7 @@ export default function DashboardPage({ onLogin }) {
       const payload = await request(`/api/profiles/${id}`)
       setSelectedProfile(payload.data)
     } catch (error) {
-      setPageError(error.message)
+      handleRequestError(error)
     } finally {
       setBusyAction('')
     }
@@ -180,7 +185,7 @@ export default function DashboardPage({ onLogin }) {
         await loadProfiles(filters, pagination.page, pagination.limit)
       }
     } catch (error) {
-      setPageError(error.message)
+      handleRequestError(error)
     } finally {
       setBusyAction('')
     }

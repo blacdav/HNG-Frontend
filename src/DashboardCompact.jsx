@@ -104,6 +104,12 @@ export default function DashboardCompact({ onLogin }) {
     }
   }, [])
 
+  function handleRequestError(error) {
+    setSelectedProfile(null)
+    setDeleteTarget(null)
+    setPageError(error.message)
+  }
+
   async function loadProfiles(activeFilters = appliedFilters, page = pagination.page, limit = pagination.limit) {
     setLoadingProfiles(true)
     setPageError('')
@@ -116,7 +122,7 @@ export default function DashboardCompact({ onLogin }) {
       setActiveSearchQuery('')
       setViewMode('browse')
     } catch (error) {
-      setPageError(error.message)
+      handleRequestError(error)
     } finally {
       setLoadingProfiles(false)
     }
@@ -139,7 +145,7 @@ export default function DashboardCompact({ onLogin }) {
       setSelectedProfile(payload.data)
       await loadProfiles(appliedFilters, 1, pagination.limit)
     } catch (error) {
-      setPageError(error.message)
+      handleRequestError(error)
     } finally {
       setBusyAction('')
     }
@@ -162,7 +168,7 @@ export default function DashboardCompact({ onLogin }) {
       setActiveSearchQuery(query.trim())
       setViewMode('search')
     } catch (error) {
-      setPageError(error.message)
+      handleRequestError(error)
     } finally {
       setLoadingProfiles(false)
     }
@@ -186,7 +192,7 @@ export default function DashboardCompact({ onLogin }) {
       const payload = await request(`/api/profiles/${id}`)
       setSelectedProfile(payload.data)
     } catch (error) {
-      setPageError(error.message)
+      handleRequestError(error)
     } finally {
       setBusyAction('')
     }
@@ -206,7 +212,7 @@ export default function DashboardCompact({ onLogin }) {
       }
       showToast('Profile deleted successfully.')
     } catch (error) {
-      setPageError(error.message)
+      handleRequestError(error)
     } finally {
       setBusyAction('')
     }
@@ -257,7 +263,7 @@ export default function DashboardCompact({ onLogin }) {
         filename: 'profiles-export.csv',
       })
     } catch (error) {
-      setPageError(error.message)
+      handleRequestError(error)
     } finally {
       setBusyAction('')
     }

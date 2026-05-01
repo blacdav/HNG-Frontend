@@ -25,6 +25,7 @@ export default function ClassifyPage({ onBackHome, onOpenDashboard, onLogin, isH
       setClassification(payload.data)
       setName('')
     } catch (error) {
+      setClassification(null)
       setErrorMessage(error.message)
     } finally {
       setBusy(false)
