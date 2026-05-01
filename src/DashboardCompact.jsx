@@ -42,7 +42,7 @@ function getExportParams(viewMode, searchQuery, filters) {
   return { q: parts.join(' ').trim() }
 }
 
-export default function DashboardCompact({ onLogin }) {
+export default function DashboardCompact({ onLogin, onLogoutComplete }) {
   const { currentUser, logout } = useAuth()
   const [profiles, setProfiles] = useState([])
   const [profilesCount, setProfilesCount] = useState(0)
@@ -244,7 +244,10 @@ export default function DashboardCompact({ onLogin }) {
 
   async function handleLogout() {
     setMenuOpen(false)
+    setSelectedProfile(null)
+    setDeleteTarget(null)
     await logout()
+    onLogoutComplete?.()
   }
 
   async function handleExportProfiles() {
