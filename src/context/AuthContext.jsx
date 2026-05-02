@@ -13,17 +13,22 @@ export function AuthProvider({ children }) {
 
     try {
       const payload = await request('/api/auth/me', { skipRefresh: true })
-      setCurrentUser(payload.data ?? null)
+      const user = payload.data ?? null
+      setCurrentUser(user)
       setErrorMessage('')
+      return user
     } catch (error) {
       try {
         await refreshSession()
         const payload = await request('/api/auth/me', { skipRefresh: true })
-        setCurrentUser(payload.data ?? null)
+        const user = payload.data ?? null
+        setCurrentUser(user)
         setErrorMessage('')
+        return user
       } catch (refreshError) {
         setCurrentUser(null)
         setErrorMessage(refreshError.message)
+        return null
       }
     } finally {
       setCheckingAuth(false)
@@ -33,11 +38,12 @@ export function AuthProvider({ children }) {
   async function logout() {
     try {
       await request('/api/auth/logout', { method: 'POST' })
-    } catch (error) {
-      // Clear local session state even if the backend logout endpoint is unavailable.
-    } finally {
       setCurrentUser(null)
       setErrorMessage('')
+      return true
+    } catch (error) {
+      setErrorMessage(error.message)
+      throw error
     }
   }
 

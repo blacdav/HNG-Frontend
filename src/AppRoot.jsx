@@ -63,13 +63,37 @@ function AppRoutes() {
       return
     }
 
-    if (currentUser && route !== '/dashboard') {
-      navigate('/dashboard')
+    if (currentUser) {
+      if (route !== '/dashboard') {
+        navigate('/dashboard')
+      }
+      return
+    }
+  }, [authReady, currentUser, route])
+
+  useEffect(() => {
+    if (!authReady || currentUser || route !== '/dashboard') {
       return
     }
 
-    if (!currentUser && route === '/dashboard') {
-      navigate('/')
+    let cancelled = false
+
+    async function validateDashboardAccess() {
+      const user = await checkSession()
+
+      if (!cancelled && !window.location.pathname.startsWith('/dashboard')) {
+        return
+      }
+
+      if (!cancelled && !user) {
+        navigate('/')
+      }
+    }
+
+    validateDashboardAccess()
+
+    return () => {
+      cancelled = true
     }
   }, [authReady, currentUser, route])
 

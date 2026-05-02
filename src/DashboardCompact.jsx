@@ -246,8 +246,17 @@ export default function DashboardCompact({ onLogin, onLogoutComplete }) {
     setMenuOpen(false)
     setSelectedProfile(null)
     setDeleteTarget(null)
-    await logout()
-    onLogoutComplete?.()
+    setBusyAction('logout')
+    setPageError('')
+
+    try {
+      await logout()
+      onLogoutComplete?.()
+    } catch (error) {
+      setPageError(error.message || 'Unable to log out right now.')
+    } finally {
+      setBusyAction('')
+    }
   }
 
   async function handleExportProfiles() {
@@ -298,8 +307,14 @@ export default function DashboardCompact({ onLogin, onLogoutComplete }) {
 
           {menuOpen && (
             <div className="hero-menu-dropdown" role="menu">
-              <button type="button" className="hero-menu-item" role="menuitem" onClick={handleLogout}>
-                <HiUser /> Logout
+              <button
+                type="button"
+                className="hero-menu-item"
+                role="menuitem"
+                onClick={handleLogout}
+                disabled={busyAction === 'logout'}
+              >
+                <HiUser /> {busyAction === 'logout' ? 'Logging out...' : 'Logout'}
               </button>
             </div>
           )}
