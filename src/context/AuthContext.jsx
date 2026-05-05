@@ -42,6 +42,12 @@ export function AuthProvider({ children }) {
       setErrorMessage('')
       return true
     } catch (error) {
+      if (error.status === 401) {
+        setCurrentUser(null)
+        setErrorMessage('')
+        return true
+      }
+
       setErrorMessage(error.message)
       throw error
     }

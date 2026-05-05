@@ -22,6 +22,13 @@ function buildHeaders(headers = {}, includeJson = true) {
   }
 }
 
+function createRequestError(response, payload, fallbackMessage) {
+  const error = new Error(payload.error || payload.message || fallbackMessage)
+  error.status = response.status
+  error.payload = payload
+  return error
+}
+
 async function runRefreshRequest() {
   if (!refreshRequest) {
     refreshRequest = fetch(buildUrl('/api/auth/refresh'), {
@@ -46,7 +53,7 @@ export async function refreshSession() {
   const payload = await response.json().catch(() => ({}))
 
   if (!response.ok) {
-    throw new Error(payload.error || payload.message || 'Unable to refresh session.')
+    throw createRequestError(response, payload, 'Unable to refresh session.')
   }
 
   return payload
@@ -90,7 +97,7 @@ export async function request(path, options = {}) {
   const payload = await response.json().catch(() => ({}))
 
   if (!response.ok) {
-    throw new Error(payload.error || payload.message || 'Something went wrong.')
+    throw createRequestError(response, payload, 'Something went wrong.')
   }
 
   return payload
@@ -102,7 +109,7 @@ export async function downloadFile(path, options = {}) {
 
   if (!response.ok) {
     const payload = await response.json().catch(() => ({}))
-    throw new Error(payload.error || payload.message || 'Unable to export profiles.')
+    throw createRequestError(response, payload, 'Unable to export profiles.')
   }
 
   const blob = await response.blob()
